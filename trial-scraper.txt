@@ -1,0 +1,23 @@
+import json
+import requests
+from hyper.contrib import HTTP20Adapter
+
+
+def create_http2_session(headers, url):
+    session = requests.Session()
+    adapter = HTTP20Adapter(headers=headers)
+    session.mount(url, adapter=adapter)
+    return session
+
+
+url = "https://learn-hub-api.datacamp.com/courses?first=12&sort=&&&&after=MTI"
+
+with open("course/static/headers.json") as reader:
+    headers = json.loads(reader.read())
+
+with open("course/static/cookies.json") as reader:
+    cookies = json.loads(reader.read())
+
+session = create_http2_session(headers, url)
+r = session.get(url, cookies=cookies)
+print(r.json())

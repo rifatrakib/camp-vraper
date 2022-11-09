@@ -1,11 +1,5 @@
-# Scrapy settings for course project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://docs.scrapy.org/en/latest/topics/settings.html
-#     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
+
 
 BOT_NAME = "course"
 
@@ -64,6 +58,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "course.pipelines.CoursePipeline": 300,
+    "course.pipelines.MongoPipeline": 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -90,3 +85,7 @@ ITEM_PIPELINES = {
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+
+# Configuration used for storing data in a MongoDB collection from MongoPipeline
+MONGO_URI = os.environ.get("MONGO_URI")
+MONGO_DATABASE = os.environ.get("MONGO_DATABASE")

@@ -2,6 +2,8 @@ import json
 
 import scrapy
 
+from course.items import Course
+
 
 class CourseCatalogueSpider(scrapy.Spider):
     name = "course_catalogue"
@@ -26,7 +28,9 @@ class CourseCatalogueSpider(scrapy.Spider):
         end_cursor = data.get("endCursor", None)
 
         for course in data.get("items"):
-            yield course
+            item_data = Course(**course)
+            item_data.link = item_data.link.replace("/continue", "?embedded=true")
+            yield item_data.dict()
 
         if end_cursor:
             url = self.start_urls[0] + f"&after={end_cursor}"

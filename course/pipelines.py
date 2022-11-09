@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import pymongo
 from itemadapter import ItemAdapter
@@ -34,7 +35,11 @@ class CoursePipeline:
             writer.write(data)
 
     def process_item(self, item, spider):
-        line = json.dumps(ItemAdapter(item).asdict(), indent=4) + ",\n"
+        data = ItemAdapter(item).asdict()
+        for key, value in data.items():
+            if isinstance(value, datetime):
+                data[key] = str(value)
+        line = json.dumps(data, indent=4) + ",\n"
         self.file.write(line)
         return item
 
@@ -59,6 +64,6 @@ class MongoPipeline:
         self.client.close()
 
     def process_item(self, item, spider):
-        collection_name = spider.name.split("_")[0] + "s_trial"
+        collection_name = spider.name.split("_")[0] + "s"
         self.db[collection_name].insert_one(ItemAdapter(item).asdict())
         return item

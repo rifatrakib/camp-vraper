@@ -24,7 +24,7 @@ def build_header_data(header_string):
     return headers
 
 
-spiders = ["course", "chapter", "video"]
+spiders = ["video"]
 for spider in spiders:
     with open(f"course/static/{spider}-catalogue/headers.json", "w") as writer:
         with open(f"course/static/{spider}-catalogue/headers.txt") as reader:

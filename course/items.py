@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Union
 from urllib.parse import urlparse
 
@@ -54,3 +55,16 @@ class CourseOutline(BaseModel):
     materials: List[Resource]
     number_of_chapters: int
     number_of_materials: int
+
+
+class VideoInformation(BaseModel):
+    context: Union[HttpUrl, str, None] = None
+    type: Union[str, None] = None
+    name: str
+    description: Union[str, None] = None
+    thumbnailUrl: List[Union[HttpUrl, str, None]] = list()
+    uploadDate: Union[datetime, None] = None
+    embedUrl: HttpUrl
+    projector_key: str
+    video_url: HttpUrl
+    transcript_url: HttpUrl

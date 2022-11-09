@@ -2,6 +2,7 @@ import json
 
 import scrapy
 
+from course.items import VideoInformation
 from course.utils import MongoConnectionManager
 
 
@@ -19,7 +20,7 @@ class VideoCatalogueSpider(scrapy.Spider):
     def start_requests(self):
         self.read_headers()
         self.read_cookies()
-        collection_name = "chapters_trial"
+        collection_name = "chapters"
         with MongoConnectionManager(collection_name) as session:
             data = list(session.find({}, {"_id": 0, "chapters": 1}))
 
@@ -43,4 +44,4 @@ class VideoCatalogueSpider(scrapy.Spider):
         data["projector_key"] = data["embedUrl"].split("?projector_key=")[-1]
         data["video_url"] = f"{video_api}&projector_key={data['projector_key']}"
         data["transcript_url"] = f"{transcript_api}/{data['projector_key']}/transcript"
-        yield data
+        yield VideoInformation(**data)

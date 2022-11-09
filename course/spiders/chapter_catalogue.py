@@ -21,7 +21,7 @@ class ChapterCatalogueSpider(scrapy.Spider):
     def start_requests(self):
         self.read_headers()
         self.read_cookies()
-        collection_name = "courses_trial"
+        collection_name = "courses"
         with MongoConnectionManager(collection_name) as session:
             data = list(session.find({}, {"_id": 0, "link": 1}))
 

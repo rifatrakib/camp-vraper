@@ -1,5 +1,9 @@
+import os
 import json
 import subprocess
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def build_cookie_data(cookie_string):
@@ -32,5 +36,5 @@ with open("course/static/cookies.json", "w") as writer:
     
     writer.write(json.dumps(data))
 
-command = "scrapy crawl datacamp"
+command = "scrapy crawl course_catalogue"
 subprocess.run(command, shell=True)

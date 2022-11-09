@@ -2,8 +2,8 @@ import json
 import scrapy
 
 
-class DatacampSpider(scrapy.Spider):
-    name = "datacamp"
+class CourseCatalogueSpider(scrapy.Spider):
+    name = "course_catalogue"
     start_urls = ["https://learn-hub-api.datacamp.com/courses?first=12&sort=&&&"]
     
     def read_headers(self):
@@ -23,6 +23,9 @@ class DatacampSpider(scrapy.Spider):
     def parse(self, response):
         data = response.json()
         end_cursor = data.get("endCursor", None)
+        
+        for course in data.get("items"):
+            yield course
         
         if end_cursor:
             url = self.start_urls[0] + f"&after={end_cursor}"

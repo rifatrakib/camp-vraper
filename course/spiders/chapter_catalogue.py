@@ -3,6 +3,7 @@ import os
 
 import scrapy
 
+from course.items import CourseOutline, Resource
 from course.utils import MongoConnectionManager
 
 
@@ -44,16 +45,17 @@ class ChapterCatalogueSpider(scrapy.Spider):
         for root_item in response.css("ol > li > ul > li"):
             link = root_item.css("a::attr(href)").get()
             title = root_item.css("h5::text").get()
+            resource = Resource(link=link, title=title)
             if root_item.css(video_icon_selector).get() == video_icon_url:
-                chapters.append({"link": link, "title": title})
+                chapters.append(resource)
             else:
-                materials.append({"link": link, "title": title})
+                materials.append(resource)
 
-        item = {
-            "slug": slug,
-            "chapters": chapters,
-            "materials": materials,
-            "number_of_chapters": len(chapters),
-            "number_of_materials": len(materials),
-        }
-        yield item
+        course_outline = CourseOutline(
+            slug=slug,
+            chapters=chapters,
+            materials=materials,
+            number_of_chapters=len(chapters),
+            number_of_materials=len(materials),
+        )
+        yield course_outline

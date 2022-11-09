@@ -41,3 +41,16 @@ class Course(BaseModel):
     technologies: List[Category]
     timeNeededInHours: Union[int, None] = None
     title: str
+
+
+class Resource(BaseModel):
+    link: HttpUrl
+    title: str
+
+
+class CourseOutline(BaseModel):
+    slug: str
+    chapters: List[Resource]
+    materials: List[Resource]
+    number_of_chapters: int
+    number_of_materials: int

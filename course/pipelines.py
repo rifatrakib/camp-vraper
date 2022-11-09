@@ -40,8 +40,6 @@ class CoursePipeline:
 
 
 class MongoPipeline:
-    collection_name = "courses_trial"
-
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
@@ -61,10 +59,6 @@ class MongoPipeline:
         self.client.close()
 
     def process_item(self, item, spider):
-        data = ItemAdapter(item).asdict()
-        self.db[self.collection_name].update_one(
-            {"slug": data["slug"]},
-            {"$set": data},
-            upsert=True,
-        )
+        collection_name = spider.name.split("_")[0] + "s_trial"
+        self.db[collection_name].insert_one(ItemAdapter(item).asdict())
         return item

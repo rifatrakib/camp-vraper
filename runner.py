@@ -21,20 +21,20 @@ def build_header_data(header_string):
         key, value = header.split("=", 1)
         headers[key] = value
 
-    return
+    return headers
 
 
-with open("course/static/headers.json", "w") as writer:
-    with open("course/static/headers.txt") as reader:
-        data = build_header_data(reader.read())
+spiders = ["course", "chapter"]
+for spider in spiders:
+    with open(f"course/static/{spider}-catalogue/headers.json", "w") as writer:
+        with open(f"course/static/{spider}-catalogue/headers.txt") as reader:
+            data = build_header_data(reader.read())
+        writer.write(json.dumps(data))
 
-    writer.write(json.dumps(data))
+    with open(f"course/static/{spider}-catalogue/cookies.json", "w") as writer:
+        with open(f"course/static/{spider}-catalogue/cookies.txt") as reader:
+            data = build_cookie_data(reader.read())
+        writer.write(json.dumps(data))
 
-with open("course/static/cookies.json", "w") as writer:
-    with open("course/static/cookies.txt") as reader:
-        data = build_cookie_data(reader.read())
-
-    writer.write(json.dumps(data))
-
-command = "scrapy crawl course_catalogue"
-subprocess.run(command, shell=True)
+    command = f"scrapy crawl {spider}_catalogue"
+    subprocess.run(command, shell=True)

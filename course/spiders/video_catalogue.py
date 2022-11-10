@@ -34,8 +34,13 @@ class VideoCatalogueSpider(scrapy.Spider):
         with MongoConnectionManager(collection_name) as session:
             data = list(session.find({}, {"_id": 0, "chapters": 1}))
 
+        with MongoConnectionManager("videos") as session:
+            exclude = list(session.find({"visited": True}, {"_id": 0, "video_url": 1}))
+
         urls = [chapter["link"] for doc in data for chapter in doc["chapters"]]
-        for url in urls:
+        exclude = [doc["video_url"] for doc in exclude]
+        urls = list(set(urls) - set(exclude))
+        for url in urls[:5]:
             yield scrapy.Request(
                 url=url,
                 headers=self.headers,
@@ -82,6 +87,7 @@ class VideoCatalogueSpider(scrapy.Spider):
             os.mkdir(f"data/{folder_name}")
 
         self.download_video(data["video_mp4_link"], folder_name, file_name)
+        print(data["page_url"])
         yield VideoAdditives(**data)
 
     def download_video(self, url, folder_name, file_name):

@@ -37,7 +37,7 @@ for header in headers:
                 data = build_cookie_data(reader.read())
             writer.write(json.dumps(data))
 
-spiders = ["course", "chapter", "video"]
+spiders = ["course", "chapter", "video", "transcript"]
 for spider in spiders:
     command = f"scrapy crawl {spider}_catalogue"
     subprocess.run(command, shell=True)

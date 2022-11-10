@@ -71,7 +71,13 @@ class MongoPipeline:
             del data["page_url"]
             self.db[collection_name].update_one(
                 {"video_url": page_url},
-                {"$set": {"details": data}},
+                {"$set": {"details": data, "visited": True}},
+            )
+        elif collection_name == "videos":
+            self.db[collection_name].update_one(
+                {"page_url": data["page_url"]},
+                {"$set": data},
+                upsert=True,
             )
         else:
             self.db[collection_name].insert_one(data)

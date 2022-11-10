@@ -133,4 +133,4 @@ dmypy.json
 *cookies.json
 *cookies.txt
 
-data/*
+data/*.json

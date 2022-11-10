@@ -89,6 +89,13 @@ class VideoInformation(BaseModel):
     visited: bool = False
 
 
+class Script(BaseModel):
+    citations: List[HttpUrl] = []
+    number: int
+    script: str
+    title: str
+
+
 class Transcript(BaseModel):
-    slides: List[HttpUrl] = []
+    slides: List[Script] = []
     url: HttpUrl

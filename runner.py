@@ -39,5 +39,5 @@ for header in headers:
 
 spiders = ["course", "chapter", "video", "transcript"]
 for spider in spiders:
-    command = f"scrapy crawl {spider}_catalogue"
+    command = f"scrapy crawl {spider}_catalogue 2>&1 | tee crawl.log"
     subprocess.run(command, shell=True)

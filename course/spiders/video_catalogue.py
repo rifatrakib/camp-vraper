@@ -36,11 +36,13 @@ class VideoCatalogueSpider(scrapy.Spider):
     def parse(self, response):
         video_api = "https://projector.datacamp.com/?auto_play=play"
         transcript_api = "https://projector.datacamp.com/api/videos"
+        page_url = response.request.url
         response = response.css('script[type="application/ld+json"]::text').get()
         data = {}
         for key, value in json.loads(response).items():
             data[key if key[0] != "@" else key[1:]] = value
 
+        data["page_url"] = page_url
         data["projector_key"] = data["embedUrl"].split("?projector_key=")[-1]
         data["video_url"] = f"{video_api}&projector_key={data['projector_key']}"
         data["transcript_url"] = f"{transcript_api}/{data['projector_key']}/transcript"

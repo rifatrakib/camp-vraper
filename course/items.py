@@ -58,9 +58,10 @@ class CourseOutline(BaseModel):
 
 
 class VideoInformation(BaseModel):
+    name: str
+    page_url: HttpUrl
     context: Union[HttpUrl, str, None] = None
     type: Union[str, None] = None
-    name: str
     description: Union[str, None] = None
     thumbnailUrl: List[Union[HttpUrl, str, None]] = list()
     uploadDate: Union[datetime, None] = None

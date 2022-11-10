@@ -57,6 +57,22 @@ class CourseOutline(BaseModel):
     number_of_materials: int
 
 
+class Subtitle(BaseModel):
+    language: str
+    link: HttpUrl
+
+
+class VideoAdditives(BaseModel):
+    page_url: HttpUrl
+    video_mp4_link: HttpUrl
+    video_hls_link: Union[bool, None] = None
+    audio_link: HttpUrl
+    subtitle_vtt_link: HttpUrl
+    thumbnail_link: Union[HttpUrl, str, None] = None
+    is_projector_video: Union[bool, None] = None
+    subtitles: List[Subtitle]
+
+
 class VideoInformation(BaseModel):
     name: str
     page_url: HttpUrl
@@ -69,3 +85,4 @@ class VideoInformation(BaseModel):
     projector_key: str
     video_url: HttpUrl
     transcript_url: HttpUrl
+    details: Union[VideoAdditives, None] = None

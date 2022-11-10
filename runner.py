@@ -24,17 +24,20 @@ def build_header_data(header_string):
     return headers
 
 
-spiders = ["course", "chapter", "video"]
-for spider in spiders:
-    with open(f"course/static/{spider}-catalogue/headers.json", "w") as writer:
-        with open(f"course/static/{spider}-catalogue/headers.txt") as reader:
+headers = ["course", "chapter", "video", "player", "transcript", "download"]
+for header in headers:
+    with open(f"course/static/{header}-catalogue/headers.json", "w") as writer:
+        with open(f"course/static/{header}-catalogue/headers.txt") as reader:
             data = build_header_data(reader.read())
         writer.write(json.dumps(data))
 
-    with open(f"course/static/{spider}-catalogue/cookies.json", "w") as writer:
-        with open(f"course/static/{spider}-catalogue/cookies.txt") as reader:
-            data = build_cookie_data(reader.read())
-        writer.write(json.dumps(data))
+    if header not in {"transcript", "download"}:
+        with open(f"course/static/{header}-catalogue/cookies.json", "w") as writer:
+            with open(f"course/static/{header}-catalogue/cookies.txt") as reader:
+                data = build_cookie_data(reader.read())
+            writer.write(json.dumps(data))
 
+spiders = ["course", "chapter", "video"]
+for spider in spiders:
     command = f"scrapy crawl {spider}_catalogue"
     subprocess.run(command, shell=True)

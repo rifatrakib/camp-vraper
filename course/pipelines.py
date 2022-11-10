@@ -65,5 +65,14 @@ class MongoPipeline:
 
     def process_item(self, item, spider):
         collection_name = spider.name.split("_")[0] + "s"
-        self.db[collection_name].insert_one(ItemAdapter(item).asdict())
+        data = ItemAdapter(item).asdict()
+        if collection_name == "videos" and "video_mp4_link" in data:
+            page_url = data["page_url"]
+            del data["page_url"]
+            self.db[collection_name].update_one(
+                {"video_url": page_url},
+                {"$set": {"details": data}},
+            )
+        else:
+            self.db[collection_name].insert_one(data)
         return item

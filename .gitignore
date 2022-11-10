@@ -133,4 +133,5 @@ dmypy.json
 *cookies.json
 *cookies.txt
 
-data/*.json
+data/*
+!data/README.md

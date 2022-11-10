@@ -35,7 +35,7 @@ class VideoCatalogueSpider(scrapy.Spider):
             data = list(session.find({}, {"_id": 0, "chapters": 1}))
 
         urls = [chapter["link"] for doc in data for chapter in doc["chapters"]]
-        for url in urls[:2]:
+        for url in urls:
             yield scrapy.Request(
                 url=url,
                 headers=self.headers,

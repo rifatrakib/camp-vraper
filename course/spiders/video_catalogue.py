@@ -1,7 +1,5 @@
 import json
-import os
 
-import requests
 import scrapy
 
 from course.items import VideoAdditives, VideoInformation
@@ -32,15 +30,15 @@ class VideoCatalogueSpider(scrapy.Spider):
         self.read_cookies()
         collection_name = "chapters"
         with MongoConnectionManager(collection_name) as session:
-            data = list(session.find({}, {"_id": 0, "chapters": 1}))
+            data = list(session.find({"slug": "introduction-to-julia"}, {"_id": 0, "chapters": 1}))
 
-        with MongoConnectionManager("videos") as session:
-            exclude = list(session.find({"visited": True}, {"_id": 0, "video_url": 1}))
+        # with MongoConnectionManager("videos") as session:
+        #     exclude = list(session.find({"visited": True}, {"_id": 0, "video_url": 1}))
 
         urls = [chapter["link"] for doc in data for chapter in doc["chapters"]]
-        exclude = [doc["video_url"] for doc in exclude]
-        urls = list(set(urls) - set(exclude))
-        for url in urls[:5]:
+        # exclude = [doc["video_url"] for doc in exclude]
+        # urls = list(set(urls) - set(exclude))
+        for url in urls:
             yield scrapy.Request(
                 url=url,
                 headers=self.headers,
@@ -76,23 +74,23 @@ class VideoCatalogueSpider(scrapy.Spider):
         data = response.css('input#videoData::attr("value")').get()
         data = json.loads(data)
         data["page_url"] = response.request.url
-        source = kwargs["source"]
+        # source = kwargs["source"]
 
-        directory = source.replace("https://campus.datacamp.com/courses/", "").split("/")
-        folder_name = directory[0]
-        file_name_items = directory[1].split("?")
-        file_name = file_name_items[1].replace("=", "-") + " - " + file_name_items[0]
+        # directory = source.replace("https://campus.datacamp.com/courses/", "").split("/")
+        # folder_name = directory[0]
+        # file_name_items = directory[1].split("?")
+        # file_name = file_name_items[1].replace("=", "-") + " - " + file_name_items[0]
 
-        if not os.path.isdir(f"data/{folder_name}"):
-            os.mkdir(f"data/{folder_name}")
+        # if not os.path.isdir(f"data/{folder_name}"):
+        #     os.mkdir(f"data/{folder_name}")
 
-        self.download_video(data["video_mp4_link"], folder_name, file_name)
+        # self.download_video(data["video_mp4_link"], folder_name, file_name)
         print(data["page_url"])
         yield VideoAdditives(**data)
 
-    def download_video(self, url, folder_name, file_name):
-        self.read_downloader_headers()
-        headers = self.downloader_headers
-        response = requests.get(url, headers=headers)
-        with open(f"data/{folder_name}/{file_name}.mp4", "wb") as writer:
-            writer.write(response.content)
+    # def download_video(self, url, folder_name, file_name):
+    #     self.read_downloader_headers()
+    #     headers = self.downloader_headers
+    # response = requests.get(url, headers=headers)
+    # with open(f"data/{folder_name}/{file_name}.mp4", "wb") as writer:
+    #     writer.write(response.content)

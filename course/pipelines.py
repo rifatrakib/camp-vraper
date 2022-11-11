@@ -64,16 +64,16 @@ class MongoPipeline:
         self.client.close()
 
     def process_item(self, item, spider):
-        collection_name = spider.name.split("_")[0] + "s"
+        collection_name = spider.name.split("_")[0] + "s_trial"
         data = ItemAdapter(item).asdict()
-        if collection_name == "videos" and "video_mp4_link" in data:
+        if collection_name == "videos_trial" and "video_mp4_link" in data:
             page_url = data["page_url"]
             del data["page_url"]
             self.db[collection_name].update_one(
                 {"video_url": page_url},
                 {"$set": {"details": data, "visited": True}},
             )
-        elif collection_name == "videos":
+        elif collection_name == "videos_trial":
             self.db[collection_name].update_one(
                 {"page_url": data["page_url"]},
                 {"$set": data},

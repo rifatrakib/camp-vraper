@@ -13,12 +13,14 @@ class DownloaderSpider(scrapy.Spider):
 
         for doc in data:
             link = doc["details"]["video_mp4_link"]
-            source = doc["page_url"]
 
-            directory = source.replace("https://campus.datacamp.com/courses/", "").split("/")
-            folder_name = directory[0]
-            file_name_items = directory[1].split("?")
-            file_name = file_name_items[1].replace("=", "-") + " - " + file_name_items[0]
+            # directory = source.replace("https://campus.datacamp.com/courses/", "").split("/")
+            # folder_name = directory[0]
+            # file_name_items = directory[1].split("?")
+            # file_name = file_name_items[1].replace("=", "-") + " - " + file_name_items[0]
+
+            folder_name = doc["course_name"]
+            file_name = doc["chapter_name"]
 
             if not os.path.isdir(f"data/videos/{folder_name}"):
                 os.mkdir(f"data/videos/{folder_name}")

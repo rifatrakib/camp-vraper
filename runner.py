@@ -3,6 +3,8 @@ import subprocess
 
 from dotenv import load_dotenv
 
+from course.utils import MongoConnectionManager
+
 load_dotenv()
 
 
@@ -24,25 +26,49 @@ def build_header_data(header_string):
     return headers
 
 
-headers = ["course", "chapter", "video", "player", "transcript", "download"]
-for header in headers:
-    with open(f"course/static/{header}-catalogue/headers.json", "w") as writer:
-        with open(f"course/static/{header}-catalogue/headers.txt") as reader:
-            data = build_header_data(reader.read())
-        writer.write(json.dumps(data))
+def run_spider(spider_name):
+    command = f"scrapy crawl {spider_name}_catalogue 2>&1 | tee {spider_name}-crawl.log"
+    subprocess.run(command, shell=True)
 
-    if header not in {"transcript", "download"}:
-        with open(f"course/static/{header}-catalogue/cookies.json", "w") as writer:
-            with open(f"course/static/{header}-catalogue/cookies.txt") as reader:
-                data = build_cookie_data(reader.read())
-            writer.write(json.dumps(data))
 
-spiders = [
-    # "course",
-    # "chapter",
-    "video",
-    # "transcript"
-]
-for spider in spiders:
-    command = f"scrapy crawl {spider}_catalogue 2>&1 | tee {spider}-crawl.log"
+# headers = ["course", "chapter", "video", "player", "transcript", "download"]
+# for header in headers:
+# with open(f"course/static/{header}-catalogue/headers.json", "w") as writer:
+#     with open(f"course/static/{header}-catalogue/headers.txt") as reader:
+#         data = build_header_data(reader.read())
+#     writer.write(json.dumps(data, indent=4))
+
+# if header not in {"transcript", "download"}:
+#     with open(f"course/static/{header}-catalogue/cookies.json", "w") as writer:
+#         with open(f"course/static/{header}-catalogue/cookies.txt") as reader:
+#             data = build_cookie_data(reader.read())
+#         writer.write(json.dumps(data, indent=4))
+
+# spiders = [
+#     # "course",
+#     # "chapter",
+#     "video",
+#     # "transcript"
+# ]
+# for spider in spiders:
+#     command = f"scrapy crawl {spider}_catalogue 2>&1 | tee {spider}-crawl.log"
+#     subprocess.run(command, shell=True)
+
+# run_spider("course")
+# run_spider("chapter")
+
+collection_name = "chapters"
+with MongoConnectionManager(collection_name) as session:
+    data = list(session.find({}, {"_id": 0, "chapters": 1, "slug": 1}))[:2]
+
+with open("chapters.json", "w") as writer:
+    writer.write(json.dumps(data, indent=4))
+
+while True:
+    with open("chapters.json") as reader:
+        if not json.loads(reader.read()):
+            print("all chapters from all courses have been scraped")
+            break
+    run_spider("video")
+    command = "python scraper.py"
     subprocess.run(command, shell=True)

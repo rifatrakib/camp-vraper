@@ -75,6 +75,8 @@ class VideoAdditives(BaseModel):
 
 class VideoInformation(BaseModel):
     name: str
+    course_name: str
+    chapter_name: str
     page_url: HttpUrl
     context: Union[HttpUrl, str, None] = None
     type: Union[str, None] = None

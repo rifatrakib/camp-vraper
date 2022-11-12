@@ -3,7 +3,6 @@ import json
 import scrapy
 
 from course.items import VideoAdditives, VideoInformation
-from course.utils import MongoConnectionManager
 
 
 class VideoCatalogueSpider(scrapy.Spider):
@@ -28,25 +27,37 @@ class VideoCatalogueSpider(scrapy.Spider):
     def start_requests(self):
         self.read_headers()
         self.read_cookies()
-        collection_name = "chapters"
-        with MongoConnectionManager(collection_name) as session:
-            data = list(session.find({"slug": "introduction-to-julia"}, {"_id": 0, "chapters": 1}))
+        with open("chapters.json", "r") as reader:
+            data = json.loads(reader.read())
+
+        course_to_scrape = data[0]
+        course_name = course_to_scrape["slug"]
+        chapters = course_to_scrape["chapters"]
 
         # with MongoConnectionManager("videos") as session:
         #     exclude = list(session.find({"visited": True}, {"_id": 0, "video_url": 1}))
 
-        urls = [chapter["link"] for doc in data for chapter in doc["chapters"]]
+        # urls = [chapter["link"] for doc in data for chapter in doc["chapters"]]
         # exclude = [doc["video_url"] for doc in exclude]
         # urls = list(set(urls) - set(exclude))
-        for url in urls:
+        # for url in urls:
+        for index, chapter in enumerate(chapters):
             yield scrapy.Request(
-                url=url,
+                # url=url,
+                url=chapter["link"],
                 headers=self.headers,
                 cookies=self.cookies,
                 callback=self.parse,
+                cb_kwargs={
+                    "chapter_name": f"{index + 1} - {chapter['title']}".replace("?", "").replace("/", "-"),
+                    "course_name": course_name.replace("?", "").replace("/", "-"),
+                },
             )
 
-    def parse(self, response):
+        with open("chapters.json", "w") as writer:
+            writer.write(json.dumps(data[1:], indent=4))
+
+    def parse(self, response, **kwargs):
         video_api = "https://projector.datacamp.com/?auto_play=play"
         transcript_api = "https://projector.datacamp.com/api/videos"
         page_url = response.request.url
@@ -55,6 +66,8 @@ class VideoCatalogueSpider(scrapy.Spider):
         for key, value in json.loads(response).items():
             data[key if key[0] != "@" else key[1:]] = value
 
+        data["course_name"] = kwargs["course_name"]
+        data["chapter_name"] = kwargs["chapter_name"]
         data["page_url"] = page_url
         data["projector_key"] = data["embedUrl"].split("?projector_key=")[-1]
         data["video_url"] = f"{video_api}&projector_key={data['projector_key']}"

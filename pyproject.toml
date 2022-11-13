@@ -13,6 +13,7 @@ Scrapy = "^2.7.1"
 pymongo = "^4.3.2"
 python-dotenv = "^0.21.0"
 types-requests = "^2.28.11.4"
+pydantic = "^1.10.2"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^5.0.4"

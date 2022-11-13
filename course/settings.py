@@ -88,3 +88,8 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 # Configuration used for storing data in a MongoDB collection from MongoPipeline
 MONGO_URI = os.environ.get("MONGO_URI")
 MONGO_DATABASE = os.environ.get("MONGO_DATABASE")
+
+# Downloader settings
+DOWNLOAD_WARNSIZE = 1073741824
+DOWNLOAD_MAXSIZE = 10737418240
+DOWNLOAD_TIMEOUT = 600

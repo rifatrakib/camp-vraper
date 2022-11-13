@@ -31,35 +31,25 @@ def run_spider(spider_name):
     subprocess.run(command, shell=True)
 
 
-# headers = ["course", "chapter", "video", "player", "transcript", "download"]
-# for header in headers:
-# with open(f"course/static/{header}-catalogue/headers.json", "w") as writer:
-#     with open(f"course/static/{header}-catalogue/headers.txt") as reader:
-#         data = build_header_data(reader.read())
-#     writer.write(json.dumps(data, indent=4))
+headers = ["course", "chapter", "video", "player", "transcript", "download"]
+for header in headers:
+    with open(f"course/static/{header}-catalogue/headers.json", "w") as writer:
+        with open(f"course/static/{header}-catalogue/headers.txt") as reader:
+            data = build_header_data(reader.read())
+        writer.write(json.dumps(data, indent=4))
 
-# if header not in {"transcript", "download"}:
-#     with open(f"course/static/{header}-catalogue/cookies.json", "w") as writer:
-#         with open(f"course/static/{header}-catalogue/cookies.txt") as reader:
-#             data = build_cookie_data(reader.read())
-#         writer.write(json.dumps(data, indent=4))
+    if header not in {"transcript", "download"}:
+        with open(f"course/static/{header}-catalogue/cookies.json", "w") as writer:
+            with open(f"course/static/{header}-catalogue/cookies.txt") as reader:
+                data = build_cookie_data(reader.read())
+            writer.write(json.dumps(data, indent=4))
 
-# spiders = [
-#     # "course",
-#     # "chapter",
-#     "video",
-#     # "transcript"
-# ]
-# for spider in spiders:
-#     command = f"scrapy crawl {spider}_catalogue 2>&1 | tee {spider}-crawl.log"
-#     subprocess.run(command, shell=True)
-
-# run_spider("course")
-# run_spider("chapter")
+run_spider("course")
+run_spider("chapter")
 
 collection_name = "chapters"
 with MongoConnectionManager(collection_name) as session:
-    data = list(session.find({}, {"_id": 0, "chapters": 1, "slug": 1}))[:2]
+    data = list(session.find({}, {"_id": 0, "chapters": 1, "slug": 1}))
 
 with open("chapters.json", "w") as writer:
     writer.write(json.dumps(data, indent=4))

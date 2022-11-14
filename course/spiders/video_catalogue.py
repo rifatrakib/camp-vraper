@@ -98,7 +98,6 @@ class VideoCatalogueSpider(scrapy.Spider):
         #     os.mkdir(f"data/{folder_name}")
 
         # self.download_video(data["video_mp4_link"], folder_name, file_name)
-        print(data["page_url"])
         yield VideoAdditives(**data)
 
     # def download_video(self, url, folder_name, file_name):

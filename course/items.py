@@ -92,7 +92,7 @@ class VideoInformation(BaseModel):
 
 
 class Script(BaseModel):
-    citations: List[HttpUrl] = []
+    citations: List[Union[HttpUrl, str, None]] = []
     number: int
     script: str
     title: str

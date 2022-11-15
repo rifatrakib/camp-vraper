@@ -31,7 +31,15 @@ def run_spider(spider_name):
     subprocess.run(command, shell=True)
 
 
-headers = ["course", "chapter", "video", "player", "transcript", "download"]
+headers = [
+    "course",
+    "chapter",
+    "video",
+    "player",
+    "transcript",
+    "download",
+    "materials",
+]
 for header in headers:
     with open(f"course/static/{header}-catalogue/headers.json", "w") as writer:
         with open(f"course/static/{header}-catalogue/headers.txt") as reader:
@@ -62,3 +70,40 @@ while True:
     run_spider("video")
     command = "python scraper.py"
     subprocess.run(command, shell=True)
+
+run_spider("transcript")
+
+collection_name = "videos"
+with MongoConnectionManager(collection_name) as session:
+    data = list(session.find({}, {"_id": 0}))
+
+updated_data = []
+for doc in data:
+    doc["uploadDate"] = str(doc["uploadDate"])
+    updated_data.append(doc)
+
+with open("subtitles.json", "w") as writer:
+    writer.write(json.dumps(updated_data, indent=4))
+
+while True:
+    with open("subtitles.json") as reader:
+        if not json.loads(reader.read()):
+            print("all chapters from all courses have been scraped")
+            break
+
+    run_spider("subtitle")
+
+collection_name = "chapters"
+with MongoConnectionManager(collection_name) as session:
+    data = list(session.find({}, {"_id": 0, "materials": 1, "slug": 1}))
+
+with open("materials.json", "w") as writer:
+    writer.write(json.dumps(data, indent=4))
+
+while True:
+    with open("materials.json") as reader:
+        if not json.loads(reader.read()):
+            print("all chapters from all courses have been scraped")
+            break
+
+    run_spider("materials")
